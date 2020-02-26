@@ -1,0 +1,113 @@
+body{
+  width:100%;
+  height:100%;
+  background-color:#0501fe;
+  margin-left:0;
+  margin-top:0;
+  margin-right:0;
+  margin-bottom:0;
+  font-family: tahoma;
+}
+div#runResultsBlock{
+  width:auto;
+  height:auto;
+  float:left;
+
+}
+div#runInfoBlock{
+  width:300px;
+  height:60px;
+  background-color:red;
+  float:left;
+}
+div#raceInfoBlock{
+  width:300px;
+  height:60px;
+  background-color:green;
+  float:left;
+}
+/*
+  result table params
+*/
+table#resultsTable{
+  width: 100%;
+  font-size: 14px;
+  border-collapse: collapse;
+}
+table#resultsTable tr{
+  height: 30px;
+
+
+  background:linear-gradient(to bottom,gray,lightgray 5%,black 10%);
+}
+table#resultsTable tr#dataRowTemplate{
+  display: table-row;
+}
+table#resultsTable th,td{
+  font-style: normal;
+  font-weight: normal;
+  color:white;
+}
+table#resultsTable th#gap,td#gap{
+  display: none;
+}
+table#resultsTable td#pos,th#pos{
+  width: 30px;
+  overflow: hidden;
+  text-align: center;
+}
+table#resultsTable td#pos{
+  color: black;
+  background: linear-gradient(to bottom,gray,lightgray 5%,white 10%);
+}
+table#resultsTable td#num,th#num{
+  width: 30px;
+  overflow: hidden;
+  text-align: center;
+}
+table#resultsTable td#num{
+  background: linear-gradient(to bottom,gray,lightgray 5%,#ff5f00 10%)
+}
+table#resultsTable td#name,th#name{
+  width: 180px;
+  overflow: hidden;
+  padding-left: 4px;
+}
+table#resultsTable td#lastLap,td#bestLap,td#gap,th#lastLap,th#bestLap,th#gap{
+  width: 80px;
+  overflow: hidden;
+}
+table#resultsTable td#lastLap{
+background: linear-gradient(to bottom,gray,lightgray 5%,#ff5f00 10%)
+}
+table#resultsTable td#lastLap,td#bestLap,td#gap{
+  text-align: right;
+  padding-right: 4px;
+}
+
+/*
+  run info params
+*/
+div#runName{
+  height: 60px;
+  background-color: green;
+  width: 200px;
+  float:left;
+  text-align: center;
+  line-height: 60px;
+}
+div#runParam{
+  height: 100%;
+  width:100px;
+  float:left;
+  vertical-align: middle;
+  background-color: green;
+}
+
+@keyframes blink {
+  from { background-color: white; }
+  to { background-color: black; }
+}
+.blink {
+  animation: blink 0.5s ; /* IE 10+ */
+}
