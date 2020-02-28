@@ -1,0 +1,101 @@
+#resultsTable{
+  width: 100%;
+  font-size: 1em;
+  font-weight: normal;
+  display: table;
+  border-collapse: collapse;
+  background: #303030;
+  text-shadow: 1px 1px 5px black;
+}
+#resultsTable #headerRow{
+  height: 1.6em;
+  display: table-row;
+  background: #202020;
+}
+#resultsTable .dataRow{
+  display: table-row;
+  height: 36px;
+  line-height: 36px;
+}
+#resultsTable .headerCell{
+  font-size: 1em;
+  color: white;
+  font-weight: normal;
+  vertical-align: bottom;
+  display: table-cell;
+  text-align: center;
+}
+#resultsTable .resultsCell{
+  display: table-cell;
+  color:white;
+  border-top: 2px solid #606060;
+
+}
+
+#resultsTable .headerCell#pos{
+  width: 40px;
+}
+#resultsTable .headerCell#num{
+  width: 40px;
+}
+#resultsTable .headerCell#name{
+  width: 160px;
+}
+#resultsTable .headerCell.lapTime{
+  width: 80px;
+}
+
+
+#resultsTable .resultsCell#pos{
+  text-align: center;
+  background: white;
+  color: black;
+  border-right: 2px solid #606060;
+}
+#resultsTable .resultsCell#pos.posWin{
+  background: green;
+  color:white;
+}
+#resultsTable .resultsCell#pos.posLost{
+  background: red;
+  color:white;
+}
+#resultsTAble .resultsCell#pos.bestLapPos{
+  background: purple;
+  color:white;
+}
+#resultsTable .resultsCell#pos.competitorFinished{
+  background: url("finish_pos.png");
+  color:white;
+}
+
+#resultsTable .resultsCell#num{
+  text-align: center;
+  background: #ff5f00;
+  color:white;
+}
+
+#resultsTable .resultsCell#name{
+  padding-left: 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+#resultsTable #last_lap_time_1{
+  background: #ff5f00;
+  border-top: 2px solid #505050;
+}
+#resultsTable .resultsCell.lapTime{
+  max-width:80px;
+  overflow: hidden;
+  text-align: right;
+  padding-right: 8px;
+}
+@keyframes blink {
+  from { background: white; }
+
+}
+.blink {
+  animation: blink 1s ; /* IE 10+ */
+}

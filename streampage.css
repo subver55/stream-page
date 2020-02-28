@@ -9,16 +9,18 @@ body{
   font-family: tahoma;
 }
 div#runResultsBlock{
-  width:auto;
+  width:400px;
   height:auto;
   float:left;
-
+  background: #202020;
 }
 div#runInfoBlock{
-  width:300px;
+  width:460px;
   height:60px;
-  background-color:red;
+  background-color:#ff5f00;
   float:left;
+  margin: 10px;
+  border: 2px solid black;
 }
 div#raceInfoBlock{
   width:300px;
@@ -26,88 +28,44 @@ div#raceInfoBlock{
   background-color:green;
   float:left;
 }
-/*
-  result table params
-*/
-table#resultsTable{
-  width: 100%;
-  font-size: 14px;
-  border-collapse: collapse;
-}
-table#resultsTable tr{
-  height: 30px;
-
-
-  background:linear-gradient(to bottom,gray,lightgray 5%,black 10%);
-}
-table#resultsTable tr#dataRowTemplate{
-  display: table-row;
-}
-table#resultsTable th,td{
-  font-style: normal;
-  font-weight: normal;
-  color:white;
-}
-table#resultsTable th#gap,td#gap{
-  display: none;
-}
-table#resultsTable td#pos,th#pos{
-  width: 30px;
-  overflow: hidden;
-  text-align: center;
-}
-table#resultsTable td#pos{
-  color: black;
-  background: linear-gradient(to bottom,gray,lightgray 5%,white 10%);
-}
-table#resultsTable td#num,th#num{
-  width: 30px;
-  overflow: hidden;
-  text-align: center;
-}
-table#resultsTable td#num{
-  background: linear-gradient(to bottom,gray,lightgray 5%,#ff5f00 10%)
-}
-table#resultsTable td#name,th#name{
-  width: 180px;
-  overflow: hidden;
-  padding-left: 4px;
-}
-table#resultsTable td#lastLap,td#bestLap,td#gap,th#lastLap,th#bestLap,th#gap{
-  width: 80px;
-  overflow: hidden;
-}
-table#resultsTable td#lastLap{
-background: linear-gradient(to bottom,gray,lightgray 5%,#ff5f00 10%)
-}
-table#resultsTable td#lastLap,td#bestLap,td#gap{
-  text-align: right;
-  padding-right: 4px;
-}
-
-/*
-  run info params
-*/
-div#runName{
+div#run_name{
   height: 60px;
-  background-color: green;
-  width: 200px;
-  float:left;
-  text-align: center;
   line-height: 60px;
-}
-div#runParam{
-  height: 100%;
-  width:100px;
+  width: 300px;
   float:left;
-  vertical-align: middle;
-  background-color: green;
-}
+  text-align: left;
+  margin-left:10px;
+  color:white;
+  font-size: 2em;
+  text-shadow: 2px 2px 4px  black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
-@keyframes blink {
-  from { background-color: white; }
-  to { background-color: black; }
 }
-.blink {
-  animation: blink 0.5s ; /* IE 10+ */
+div#run_param{
+  color:black;
+  text-shadow: 1px 1px 4px gray;
+
+  height: 45px;
+  line-height: 45px;
+  width:140px;
+  float:left;
+  background: white;
+  border: 2px solid black;
+  text-align: center;
+  margin-right:5px;
+  margin-top:5px;
+  font-size:2em;
+}
+div#run_param.finished{
+  color:white;
+  text-shadow: 1px 1px 4px black;
+  background: url("finishFlag.png");
+}
+div#copyright{
+  text-align: right;
+  color:#c0c0c0;
+  font-size:0.8em;
+  margin-right: 4px;
 }
