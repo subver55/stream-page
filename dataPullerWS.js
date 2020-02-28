@@ -389,13 +389,21 @@ function updateResults(results)
         {
           var keyval = okeys[key];
           el = cells[keyval];
+          if(keyval=="diff")
+          {
+              if(sortMode==1)
+              {
+                el = cells["best_lap_time"];
+              }
+          }
+
           if(el!=null)
           {
             val = resultItem[okeys[key]][0];
             attr = resultItem[okeys[key]][1];
             if(val!=null)
             {
-              if(keyval=="best_lap_time")
+              if(keyval=="best_lap_time" || keyval=="diff")
               {
                 if(sortMode==1)
                 {
@@ -497,7 +505,7 @@ function updateResults(results)
           el = cells["pos"];
           if(el!=null)
           {
-        //    if(el.hasClass("bestLapPos")==false)
+            if(hasClass(el,"bestLapPos")==false)
             {
               el.className = "resultsCell";
               if(posChange<0)
@@ -525,17 +533,18 @@ function updateResults(results)
         {
           removeClass(p,"bestLapPos");
         }
-        var row = resultsTable.querySelector(".compid"+bestLapCompetitorId);
-        if(row!=null)
-        {
-          var pos = row.querySelector("#pos");
-          if(pos!=null)
-          {
-            pos.className = "resultsCell bestLapPos"
-          }
-        }
     }
   }
+  var row = resultsTable.querySelector(".compid"+bestLapCompetitorId);
+  if(row!=null)
+  {
+    var pos = row.querySelector("#pos");
+    if(pos!=null)
+    {
+      pos.className = "resultsCell bestLapPos"
+    }
+  }
+
 }
 
 function rmBlink(p)
