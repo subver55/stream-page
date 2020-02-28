@@ -505,7 +505,7 @@ function updateResults(results)
           el = cells["pos"];
           if(el!=null)
           {
-            if(hasClass(el,"bestLapPos")==false)
+            if(hasClass(el,"competitorFinished")==false)
             {
               el.className = "resultsCell";
               if(posChange<0)
@@ -516,7 +516,7 @@ function updateResults(results)
               {
                 addClass(el,"posLost");
               }
-            }
+           }
           }
         }
       }
@@ -541,6 +541,7 @@ function updateResults(results)
     var pos = row.querySelector("#pos");
     if(pos!=null)
     {
+      if(hasClass(pos,"competitorFinished")==false)
       pos.className = "resultsCell bestLapPos"
     }
   }
