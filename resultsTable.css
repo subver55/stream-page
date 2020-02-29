@@ -133,18 +133,19 @@
   height: 2px;
   background:linear-gradient(to left,transparent,yellow 2px, #ff5f00 8px);
 }
-@keyframes blink {
-  from { background: white; }
-}
-.blink {
-  animation: blink 1s ; /* IE 10+ */
-}
 @keyframes fadeOut {
   to {opacity:0;}
 }
 .fadeOut {
   animation: fadeOut 5s forwards;
 }
+@keyframes blink {
+  from { background: white; }
+}
+.blink {
+  animation: blink 1s ; /* IE 10+ */
+}
+
 #resultsTable .resultsCell.lapTime{
   color: white;
 }

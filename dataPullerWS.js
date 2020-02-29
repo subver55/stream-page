@@ -449,11 +449,11 @@ function updateResults(results)
                     {
                       ch = resultItem["pos_change"][0];
                       el.className = "resultsCell";
-                      if(ch<0)
+                      if(ch>0)
                       {
                         addClass(el,"posWin");
                       }
-                      if(ch>0)
+                      if(ch<0)
                       {
                         addClass(el,"posLost");
                       }
@@ -550,11 +550,11 @@ function updateResults(results)
             if(hasClass(el,"competitorFinished")==false)
             {
               el.className = "resultsCell";
-              if(posChange<0)
+              if(posChange>0)
               {
                 addClass(el,"posWin");
               }
-              else if(posChange>0)
+              else if(posChange<0)
               {
                 addClass(el,"posLost");
               }
