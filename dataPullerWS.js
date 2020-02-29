@@ -57,7 +57,7 @@ function bodyLoaded()
     {
       row.remove();
     }
-    setInterval(updateMarkers,100);
+    setInterval(updateMarkers,50);
     connectWs();
 }
 
@@ -409,7 +409,15 @@ function updateResults(results)
               {
                 if(sortMode==1)
                 {
-                  val = resultItem["diff"][0];
+                  var diff = resultItem["diff"];
+                  if(diff!=null)
+                  {
+                    val = diff[0];
+                  }
+                  else
+                  {
+                    val = 0;
+                  }
                   el.innerHTML = formatDiff(val);
                   continue;
                 }
