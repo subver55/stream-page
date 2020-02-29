@@ -272,7 +272,8 @@ function reloadData(json)
       {
         for(let node of nodes)
         {
-          node.remove();
+          var n = resultsTable.removeChild(node);
+          delete n;
         }
       }
       finishType = 0;
@@ -605,7 +606,6 @@ function rmFadeout(p)
 function fadeOut(p)
 {
   p.classList.add("fadeOut");
-//  setTimeout(rmFadeout,3000,p);
 }
 function updateMarkers()
 {
