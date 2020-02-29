@@ -1,4 +1,3 @@
-var scoreboardDataWsUrl = "ws://192.168.1.115:10310";
 var currentTimeDiv=null;
 var resultsDataRow=null;
 var resultsTable=null;
@@ -14,12 +13,13 @@ var wsScoreboard = null;
 var finishType = 0;
 var sortMode = 0;
 var bestLapCompetitorId = -1;
+var competitorStates = Object();
 function connectWs()
 {
   wsScoreboard = new WebSocket(scoreboardDataWsUrl);
   wsScoreboard.onopen= function(e){
     var dataSet=["pos","num","competitor_state","name",
-"best_lap_time","last_lap_time_1","laps_count","diff"];
+"best_lap_time","last_lap_time_1","laps_count","diff","last_sector_1","last_sector_2","last_sector_3"];
     wsScoreboard.send(JSON.stringify(dataSet));
   };
   wsScoreboard.onmessage =function(event){
@@ -57,14 +57,7 @@ function bodyLoaded()
     {
       row.remove();
     }
-
-
-    //pullData("reload");
-    /*
-    if(typeof initWeatherWidget !== "undefined")
-    {
-      initWeatherWidget();
-    }*/
+    setInterval(updateMarkers,100);
     connectWs();
 }
 
@@ -129,7 +122,7 @@ function formatRaceTime(val)
   }
   return hours+":"+minutes+":"+seconds;
 }
-function formatLapTime(val)
+function formatLapTime(val,rparam)
 {
   if(isNaN(val))
   {
@@ -160,7 +153,11 @@ function formatLapTime(val)
     }
   }
   s = (val%60000)/1000;
-  var seconds = parseFloat((val%60000)/1000).toFixed(3)+"";
+  if(rparam==null)
+  {
+    rparam=3;
+  }
+  var seconds = parseFloat((val%60000)/1000).toFixed(rparam)+"";
   if(m>0 && s<10)
   {
     seconds="0"+seconds;
@@ -209,7 +206,7 @@ function reloadData(json)
   {
     if(runName!=null)
     {
-      runName.innerHTML =  refresh["runName"];
+      runName.innerHTML =  refresh["runName"].toUpperCase();
     }
     finishType = refresh["finishType"];
     var runParamStr = formatRaceTime(refresh["elapsedTime"]);
@@ -233,7 +230,7 @@ function reloadData(json)
     }
     if(runParam!=null)
     {
-      runParam.innerHTML = runParamStr;
+      runParam.innerHTML = runParamStr.toUpperCase();
     }
     var flagState = refresh["flagState"];
     if(flagState==3)
@@ -255,14 +252,14 @@ function reloadData(json)
         var p = document.getElementById("bestLap");
         if(p!=null)
         {
-          p.innerHTML = "Отстав.";
+          p.innerHTML ="ОТСТАВ.";
         }
       }
       else {
         var p = document.getElementById("bestLap");
         if(p!=null)
         {
-          p.innerHTML = "Лучш.<br> круг";
+          p.innerHTML = "ЛУЧШ.<br>КРУГ";
         }
       }
       prevSortMode = sortMode;
@@ -278,6 +275,9 @@ function reloadData(json)
           node.remove();
         }
       }
+      finishType = 0;
+      bestLapCompetitorId = -1;
+      competitorStates = Object();
       return;
     }
 
@@ -384,25 +384,27 @@ function updateResults(results)
             }
           }
         }
-        var cells = row.children;
         for(key in okeys)
         {
           var keyval = okeys[key];
-          el = cells[keyval];
+          el = row.querySelector("#"+keyval);
           if(keyval=="diff")
           {
               if(sortMode==1)
               {
-                el = cells["best_lap_time"];
+                el = row.querySelector("#best_lap_time");
               }
           }
-
           if(el!=null)
           {
             val = resultItem[okeys[key]][0];
             attr = resultItem[okeys[key]][1];
             if(val!=null)
             {
+              if(typeof(val)=="string")
+              {
+                val = val.toUpperCase();
+              }
               if(keyval=="best_lap_time" || keyval=="diff")
               {
                 if(sortMode==1)
@@ -419,6 +421,10 @@ function updateResults(results)
               else if(hasClass(el,"lapTime"))
               {
                 el.innerHTML = formatLapTime(val);
+              }
+              else if(hasClass(el,"sectorTime"))
+              {
+                el.innerHTML = formatLapTime(val,1);
               }
               else if(hasClass(el,"laps"))
               {
@@ -444,12 +450,21 @@ function updateResults(results)
                       }
                     }
                   }
-                }
-                if(resultItem["competitor_state"]!=null)
-                {
-                  if(resultItem["competitor_state"][0]==1)
+                  if(resultItem["competitor_state"]!=null)
                   {
-                    el.className = "resultsCell competitorFinished"
+                    if(resultItem["competitor_state"][0]==1)
+                    {
+                      el.className = "resultsCell competitorFinished"
+                      var competitorState = competitorStates[competitorId];
+                      if(competitorState!=null)
+                      {
+                        if(!competitorState.finished)
+                        {
+                          fadeOut(competitorState.marker);
+                        }
+                        competitorState.finished = true;
+                      }
+                    }
                   }
                 }
                 if(okeys[key]=="num")
@@ -489,20 +504,38 @@ function updateResults(results)
       if(compId!=null)
       {
         var row = resultsTable.querySelector(".compid"+compId);
-        cells = row.children;
         var passingType = passing["pass_type"];
         if(passingType!=null)
         {
-          el = cells[passingType];
+          el = row.querySelector("#"+passingType);
           if(el!=null)
           {
             blink(el);
+          }
+          if(passingType=="last_lap_time_1")
+          {
+            var competitorState = competitorStates[compId];
+            if(competitorState==null)
+            {
+              var m = row.querySelector(".marker");
+              competitorState = {competitorId:compId,lastHit:Date.now(),lastLapTime:0,marker:m,finished:false};
+              competitorStates[compId]=competitorState;
+            }
+            competitorState.lastLapTime = passing["lapTime"];
+            if(competitorState.finished)
+            {
+              competitorState.lastLapTime = 0;
+            }
+            else {
+              rmFadeout(competitorState.marker);
+            }
+            competitorState.lastHit = Date.now();
           }
         }
         var posChange = passing["posChange"];
         if(posChange!=null)
         {
-          el = cells["pos"];
+          el = row.querySelector("#pos");
           if(el!=null)
           {
             if(hasClass(el,"competitorFinished")==false)
@@ -556,4 +589,40 @@ function blink(p)
 {
   p.classList.add("blink");
   setTimeout(rmBlink,1000,p);
+}
+function rmFadeout(p)
+{
+  p.classList.remove("fadeOut");
+}
+function fadeOut(p)
+{
+  p.classList.add("fadeOut");
+//  setTimeout(rmFadeout,3000,p);
+}
+function updateMarkers()
+{
+  var cts = Date.now();
+  for(index in competitorStates)
+  {
+    var competitorState = competitorStates[index];
+    if(competitorState.marker!=null)
+    {
+      var llt = competitorState.lastLapTime;
+      if(llt>0)
+      {
+        var t = cts - competitorState.lastHit;
+        var progress=0;
+        if(llt>0)
+        {
+          if(t>llt)
+          {
+            fadeOut(competitorState.marker);
+            t = llt;
+          }
+          progress = (t*100.0)/llt;
+        }
+        competitorState.marker.style.width = progress+"%";
+      }
+    }
+  }
 }

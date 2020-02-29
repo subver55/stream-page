@@ -9,10 +9,13 @@ body{
   font-family: tahoma;
 }
 div#runResultsBlock{
-  width:400px;
+  position:relative;
+  width:auto;
   height:auto;
   float:left;
   background: #202020;
+
+
 }
 div#runInfoBlock{
   width:460px;
@@ -20,7 +23,7 @@ div#runInfoBlock{
   background-color:#ff5f00;
   float:left;
   margin: 10px;
-  border: 2px solid black;
+
 }
 div#raceInfoBlock{
   width:300px;
@@ -67,5 +70,5 @@ div#copyright{
   text-align: right;
   color:#c0c0c0;
   font-size:0.8em;
-  margin-right: 4px;
+  margin-right: 10px;
 }
