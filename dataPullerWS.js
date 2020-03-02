@@ -304,6 +304,7 @@ function updateResults(results)
 {
   if(results!=null)
   {
+    /*
     var currentRowCount = resultsTable.children.length-1;
     var newRowCount = 0;
     for(i=0;i<results.length;i++)
@@ -317,6 +318,7 @@ function updateResults(results)
         }
       }
     }
+
     if(currentRowCount<newRowCount)
     {
       for(i=currentRowCount;i<newRowCount;i++)
@@ -333,7 +335,7 @@ function updateResults(results)
         }
         resultsTable.appendChild(newRow);
       }
-    }
+    }*/
     if(results.length>0)
     {
       for(let resultItem of results)
@@ -349,10 +351,28 @@ function updateResults(results)
         var row = resultsTable.querySelector(".compid"+competitorId);
         if(row==null)
         {
-          row = resultsTable.children[pos];
+          row = resultsDataRow.cloneNode(true);
           addClass(row,"compid"+competitorId);
+          resultsTable.appendChild(row);
+          for(i=1;i<resultsTable.children.length;i++)
+          {
+            var r = resultsTable.children[i];
+            if((i%2) == 0)
+            {
+              removeClass(r,"oddRow");
+            }
+            else
+            {
+              addClass(r,"oddRow");
+            }
+            var p = r.querySelector("#pos");
+            if(p!=null)
+            {
+              p.innerHTML = i;
+            }
+          }
         }
-        else {
+        {
           var oldPos = -1;
           for(i=1;i<resultsTable.children.length;i++)
           {
@@ -414,12 +434,12 @@ function updateResults(results)
                   if(diff!=null)
                   {
                     val = diff[0];
+                    el.innerHTML = formatDiff(val);                    
                   }
                   else
                   {
                     val = 0;
                   }
-                  el.innerHTML = formatDiff(val);
                   continue;
                 }
               }
