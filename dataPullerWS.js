@@ -14,13 +14,15 @@ var finishType = 0;
 var sortMode = 0;
 var bestLapCompetitorId = -1;
 var competitorStates = Object();
+
 function connectWs()
 {
   wsScoreboard = new WebSocket(scoreboardDataWsUrl);
   wsScoreboard.onopen= function(e){
-    var dataSet=["pos","pos_change","num","competitor_state","name",
-"best_lap_time","last_lap_time_1","laps_count","diff","last_sector_1","last_sector_2","last_sector_3"];
-    wsScoreboard.send(JSON.stringify(dataSet));
+    var json={};
+    json["trackId"] = trackId;
+    json["dataSet"] = dataSet;
+    wsScoreboard.send(JSON.stringify(json));
   };
   wsScoreboard.onmessage =function(event){
     var json = JSON.parse(event.data);
@@ -202,21 +204,56 @@ function reloadData(json)
 {
   refresh = json["refresh"];
   update = json["update"];
+
+  if(json["command"]=="clear")
+  {
+    var nodes = resultsTable.querySelectorAll(".dataRow");
+    if(nodes!=null)
+    {
+      for(let node of nodes)
+      {
+        var n = resultsTable.removeChild(node);
+        delete n;
+      }
+    }
+    finishType = 0;
+    bestLapCompetitorId = -1;
+    competitorStates = Object();
+
+  }
+
   if(!isEmpty(refresh))
   {
     if(runName!=null)
     {
-      runName.innerHTML =  refresh["runName"].toUpperCase();
+      var rn = refresh["runName"];
+      if(rn!=null)
+      {
+        runName.innerHTML =  refresh["runName"].toUpperCase();
+      }
     }
-    finishType = refresh["finishType"];
-    var runParamStr = formatRaceTime(refresh["elapsedTime"]);
+    if(refresh["finishType"]!=null)
+    {
+      finishType = refresh["finishType"];
+    }
+    var runParamStr ="";
+    var et = refresh["elapsedTime"];
+    if(et==null)
+    {
+      et = refresh["raceTime"]*1000;
+    }
+    if(et!=null && !isNaN(et))
+    {
+      runParamStr =  formatRaceTime(et);
+    }
+
     if(finishType!=null)
     {
-        if(finishType==2)// finish by time
+        if(finishType==2 || finishType=="finishByTime")// finish by time
         {
           runParamStr = formatRaceTime(refresh["timeToGo"]);
         }
-        else if(finishType==1)
+        else if(finishType==1 || finishType =="finishByLaps")
         {
           var lapsToGo = refresh["lapsToGo"];
           var totalLaps = refresh["finishParam"];
@@ -228,17 +265,25 @@ function reloadData(json)
           runParamStr = currentLap+"/"+totalLaps;
         }
     }
-    if(runParam!=null)
+    if(runParam!=null && runParamStr!="" && runParamStr!=null)
     {
       runParam.innerHTML = runParamStr.toUpperCase();
     }
     var flagState = refresh["flagState"];
-    if(flagState==3)
+    if(flagState==null)
     {
-      addClass(runParam,"finished");
+      flagState==refresh["flagStatus"];
     }
-    else {
-      removeClass(runParam,"finished");
+    if(flagState!=null)
+    {
+      if(flagState==3)
+      {
+        addClass(runParam,"finished");
+      }
+      else
+      {
+        removeClass(runParam,"finished");
+      }
     }
   }
   if(!isEmpty(update))
@@ -264,38 +309,25 @@ function reloadData(json)
       }
       prevSortMode = sortMode;
     }
-
-    if(json["command"]=="clear")
+/*
+    var blInfo = update["bestLapInfo"];
+    if(blInfo!=null)
     {
-      var nodes = resultsTable.querySelectorAll(".dataRow");
-      if(nodes!=null)
+      blTime = blInfo["lapTime"];
+      blName = blInfo["name"];
+      if(blName==null || blTime==0 || blTime==null)
       {
-        for(let node of nodes)
-        {
-          var n = resultsTable.removeChild(node);
-          delete n;
-        }
+        blName="";
       }
-      finishType = 0;
-      bestLapCompetitorId = -1;
-      competitorStates = Object();
-      return;
-    }
-
-    blTime = update["bestLapTime"];
-    blName = update["bestLapName"];
-    if(blName==null || blTime==0 || blTime==null)
-    {
-      blName="";
-    }
-    if(bestLapName!=null)
-    {
-      bestLapName.innerHTML = blName;
-    }
-    if(bestLapTime!=null)
-    {
-      bestLapTime.innerHTML =  formatLapTime(update["bestLapTime"]);
-    }
+      if(bestLapName!=null)
+      {
+        bestLapName.innerHTML = blName;
+      }
+      if(bestLapTime!=null)
+      {
+        bestLapTime.innerHTML =  formatLapTime(blTime);
+      }
+    }*/
     results = update["results"];
     updateResults(results)
   }
@@ -336,18 +368,18 @@ function updateResults(results)
         resultsTable.appendChild(newRow);
       }
     }*/
-    if(results.length>0)
+  //  if(results.length>0)
     {
-      for(let resultItem of results)
+      for(competitorId in results)
       {
-        //resultItem = results[i];
+        var resultItem = results[competitorId];
         okeys = Object.keys(resultItem);
-        var pos = resultItem["pos"][0];
-        var competitorId = resultItem["competitor_id"];
-        if(pos==null)
+        var pos = resultItem["pos"];
+        if(pos!=null)
         {
-          continue;
+          pos = pos[0];
         }
+
         var row = resultsTable.querySelector(".compid"+competitorId);
         if(row==null)
         {
@@ -372,6 +404,7 @@ function updateResults(results)
             }
           }
         }
+        if(pos!=null)
         {
           var oldPos = -1;
           for(i=1;i<resultsTable.children.length;i++)
@@ -434,7 +467,7 @@ function updateResults(results)
                   if(diff!=null)
                   {
                     val = diff[0];
-                    el.innerHTML = formatDiff(val);                    
+                    el.innerHTML = formatDiff(val);
                   }
                   else
                   {
@@ -529,7 +562,7 @@ function updateResults(results)
   {
     //console.log(lastPassings);
     lastPassings.forEach(passing => {
-      var compId = passing["competitor_id"];
+      var compId = passing["competitorId"];
       if(compId!=null)
       {
         var row = resultsTable.querySelector(".compid"+compId);
@@ -550,7 +583,7 @@ function updateResults(results)
               competitorState = {competitorId:compId,lastHit:Date.now(),lastLapTime:0,marker:m,finished:false};
               competitorStates[compId]=competitorState;
             }
-            competitorState.lastLapTime = passing["lapTime"];
+            competitorState.lastLapTime = passing["lastLapTime"];
             if(competitorState.finished)
             {
               competitorState.lastLapTime = 0;
@@ -584,30 +617,33 @@ function updateResults(results)
       }
     });
   }
-  var bCompId = update["bestLapCompId"];
-  if(bCompId!=null)
+  var bestLapInfo = update["bestLapInfo"];
+  if(bestLapInfo!=null)
   {
-    if(bCompId!=bestLapCompetitorId)
+    var bCompId = bestLapInfo["competitorId"];
+    if(bCompId!=null)
     {
-        bestLapCompetitorId = bCompId;
-        var poscells = resultsTable.querySelectorAll(".resultsCell#pos");
-        for(let p of poscells)
-        {
-          removeClass(p,"bestLapPos");
-        }
+      if(bCompId!=bestLapCompetitorId)
+      {
+          bestLapCompetitorId = bCompId;
+          var poscells = resultsTable.querySelectorAll(".resultsCell#pos");
+          for(let p of poscells)
+          {
+            removeClass(p,"bestLapPos");
+          }
+      }
+    }
+    var row = resultsTable.querySelector(".compid"+bestLapCompetitorId);
+    if(row!=null)
+    {
+      var pos = row.querySelector("#pos");
+      if(pos!=null)
+      {
+        if(hasClass(pos,"competitorFinished")==false)
+        pos.className = "resultsCell bestLapPos"
+      }
     }
   }
-  var row = resultsTable.querySelector(".compid"+bestLapCompetitorId);
-  if(row!=null)
-  {
-    var pos = row.querySelector("#pos");
-    if(pos!=null)
-    {
-      if(hasClass(pos,"competitorFinished")==false)
-      pos.className = "resultsCell bestLapPos"
-    }
-  }
-
 }
 
 function rmBlink(p)
