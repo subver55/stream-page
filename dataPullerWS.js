@@ -262,12 +262,19 @@ function reloadData(json)
           {
             currentLap = totalLaps;
           }
-          runParamStr = currentLap+"/"+totalLaps;
+          if(currentLap!=null && totalLaps!=null)
+          {
+            runParamStr = currentLap+"/"+totalLaps;
+            runParam.innerHTML = runParamStr.toUpperCase();
+          }
         }
     }
-    if(runParam!=null && runParamStr!="" && runParamStr!=null)
+    if(finishType==0 || finishType==2 || finishType=="finishByTime")
     {
-      runParam.innerHTML = runParamStr.toUpperCase();
+      if(runParam!=null && runParamStr!="" && runParamStr!=null)
+      {
+        runParam.innerHTML = runParamStr.toUpperCase();
+      }
     }
     var flagState = refresh["flagState"];
     if(flagState==null)
