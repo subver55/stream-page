@@ -14,6 +14,8 @@ var finishType = 0;
 var sortMode = 0;
 var bestLapCompetitorId = -1;
 var competitorStates = Object();
+var lapsToGo = 0;
+var totalLaps = 0;
 
 function connectWs()
 {
@@ -224,6 +226,7 @@ function reloadData(json)
 
   if(!isEmpty(refresh))
   {
+    console.log(refresh);
     if(runName!=null)
     {
       var rn = refresh["runName"];
@@ -255,8 +258,14 @@ function reloadData(json)
         }
         else if(finishType==1 || finishType =="finishByLaps")
         {
-          var lapsToGo = refresh["lapsToGo"];
-          var totalLaps = refresh["finishParam"];
+          if(refresh["lapsToGo"]!=null)
+          {
+            lapsToGo = refresh["lapsToGo"];
+          }
+          if(refresh["finishParam"]!=null)
+          {
+            totalLaps = refresh["finishParam"];
+          }
           var currentLap = totalLaps-lapsToGo+1;
           if(currentLap>totalLaps)
           {
@@ -279,7 +288,7 @@ function reloadData(json)
     var flagState = refresh["flagState"];
     if(flagState==null)
     {
-      flagState==refresh["flagStatus"];
+      flagState=refresh["flagStatus"];
     }
     if(flagState!=null)
     {
@@ -501,41 +510,6 @@ function updateResults(results)
               }
               else
               {
-                if(okeys[key]=="pos")
-                {
-                  if(resultItem["pos_change"]!=null)
-                  {
-                    if(resultItem["pos_change"][0]!=null)
-                    {
-                      ch = resultItem["pos_change"][0];
-                      el.className = "resultsCell";
-                      if(ch>0)
-                      {
-                        addClass(el,"posWin");
-                      }
-                      if(ch<0)
-                      {
-                        addClass(el,"posLost");
-                      }
-                    }
-                  }
-                  if(resultItem["competitor_state"]!=null)
-                  {
-                    if(resultItem["competitor_state"][0]==1)
-                    {
-                      el.className = "resultsCell competitorFinished"
-                      var competitorState = competitorStates[competitorId];
-                      if(competitorState!=null)
-                      {
-                        if(!competitorState.finished)
-                        {
-                          fadeOut(competitorState.marker);
-                        }
-                        competitorState.finished = true;
-                      }
-                    }
-                  }
-                }
                 if(okeys[key]=="num")
                 {
                   if(resultItem["short_class_name"]!=null)
@@ -546,12 +520,13 @@ function updateResults(results)
                     }
                   }
                 }
+
                 el.innerHTML = val;
               }
             }
             else
             {
-              el.innerHTML = "";
+            //  el.innerHTML = "";
             }
             removeClass(el,"personalBest");
             removeClass(el,"totalBest");
@@ -561,6 +536,50 @@ function updateResults(results)
             }
           }
         }
+        if(resultItem["pos_change"]!=null)
+        {
+          if(resultItem["pos_change"][0]!=null)
+          {
+            ch = resultItem["pos_change"][0];
+            var el = row.querySelector("#pos");
+            if(el!=null)
+            {
+              el.className = "resultsCell";
+              if(ch>0)
+              {
+                addClass(el,"posWin");
+              }
+              if(ch<0)
+              {
+                addClass(el,"posLost");
+              }
+           }
+          }
+        }
+
+        if(resultItem["competitor_state"]!=null)
+        {
+          if(resultItem["competitor_state"][0]==1)
+          {
+            el = row.querySelector("#pos");
+            if(el!=null)
+            {
+              el.className = "resultsCell competitorFinished"
+              var competitorState = competitorStates[competitorId];
+              if(competitorState!=null)
+              {
+                if(!competitorState.finished)
+                {
+                  fadeOut(competitorState.marker);
+                }
+                competitorState.finished = true;
+              }
+            }
+          }
+        }
+
+
+
       }
     }
   }
@@ -601,6 +620,7 @@ function updateResults(results)
             competitorState.lastHit = Date.now();
           }
         }
+        /*
         var posChange = passing["posChange"];
         if(posChange!=null)
         {
@@ -620,7 +640,7 @@ function updateResults(results)
               }
            }
           }
-        }
+        }*/
       }
     });
   }
