@@ -1,4 +1,4 @@
-var scoreboardDataWsUrl = "ws://192.168.1.130:9180";
+var scoreboardDataWsUrl = "ws://kartchrono.com:9180";
 var accessToken = "custom_token";
 var trackId = "default_track";
 var dataSet=["pos","pos_change","num","competitor_state","name",

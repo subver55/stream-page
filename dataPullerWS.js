@@ -269,7 +269,7 @@ function reloadData(json)
           }
         }
     }
-    if(finishType==0 || finishType==2 || finishType=="finishByTime")
+    if(finishType==0 || finishType==2 || finishType=="finishByTime" || finishType=="finishNone")
     {
       if(runParam!=null && runParamStr!="" && runParamStr!=null)
       {
